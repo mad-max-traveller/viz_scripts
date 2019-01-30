@@ -25,13 +25,14 @@ tail /etc/sysctl.conf
 
 # Настройка часового пояса, производится вводом цифры региона и местоположения.
 # Перезапустить настройку можно командой sudo dpkg-reconfigure tzdata.
-apt-get install -y screen tzdata && dpkg-reconfigure tzdata
+apt-get install -y screen tzdata
 
 cd $WORKDIR
 git clone https://github.com/VIZ-World/viz-world.git
 cd $WORKDIR/viz-world
 #git checkout master
 git checkout mainnet-dev
+#git checkout mainnet-test2
 git submodule update --init --recursive -f
 
 mkdir $WORKDIR/viz-world/build
@@ -45,10 +46,9 @@ cd $WORKDIR/viz-world/build/ && nohup make -j$(nproc) cli_wallet > buildlog_cli_
 # sleep 5s
 # screen -S vizd -p 0 -X quit
 
-# Копируем снапшот в каталог к исполняемому файлу 
-cp $WORKDIR/viz-world/share/vizd/snapshot.json $WORKDIR/viz-world/build/programs/vizd
-
+# Копируем снапшот в каталог к исполняемому файлу
 mkdir $WORKDIR/viz-world/build/programs/vizd/witness_node_data_dir
+cp $WORKDIR/viz-world/share/vizd/snapshot.json $WORKDIR/viz-world/build/programs/vizd/witness_node_data_dir
 
 # Заполняем параметрами конфиг ноды.
 cat <<EOT > $WORKDIR/viz-world/build/programs/vizd/witness_node_data_dir/config.ini
@@ -60,17 +60,24 @@ block-num-check-free-size = 1000
 single-write-thread = 0
 clear-votes-before-block = 0
 skip-virtual-ops = 0
-enable-plugins-on-push-transaction = 1
+enable-plugins-on-push-transaction = 0
 follow-max-feed-size = 500
 webserver-thread-pool-size = 256
 
-p2p-seed-node = 86.105.54.160:2001
-p2p-seed-node = 207.180.212.206:2001
-p2p-seed-node = 172.104.132.57:2001
-p2p-seed-node = 94.16.120.147:4243
-p2p-seed-node = 104.196.120.7:2001
+# minimal plugins
+plugin = chain p2p json_rpc webserver network_broadcast_api
+
+p2p-seed-node = 172.104.132.57:9099
+p2p-seed-node = 94.16.120.147:4248
+p2p-seed-node = 142.93.228.7:2001
+p2p-seed-node = 178.62.61.190:8099
+p2p-seed-node = 13.81.61.249:2001
+p2p-seed-node = 54.93.168.9:2001
 
 p2p-endpoint = 0.0.0.0:8082
+
+enable-stale-production = true
+required-participation = 0
 
 [log.console_appender.stderr]
 stream = std_error

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . config.sh
 
 cd $WORKDIR/viz-world
@@ -6,7 +6,7 @@ cd $WORKDIR/viz-world
 git checkout mainnet-dev
 
 # Качаем обновления
-#git fetch
+git fetch
 
 # Переходим в свежее состояние
 git pull
